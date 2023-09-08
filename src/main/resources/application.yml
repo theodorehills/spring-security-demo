@@ -1,0 +1,16 @@
+spring:
+  security:
+    user:
+      name: admin
+      password: 123456
+
+logging:
+  pattern:
+    console: '%clr(%d{${LOG_DATEFORMAT_PATTERN:dd/MMM/yyyy HH:mm:ss}}){faint} %clr(${LOG_LEVEL_PATTERN:%-5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}'
+
+app:
+  cors:
+    allowed-methods: get, delete, post, put
+    allowed-headers: [Content-Type, Authorization]
+    allowed-origins: ['*']
+    exposed-headers: [Content-Type, Authorization]
