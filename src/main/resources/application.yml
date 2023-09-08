@@ -12,5 +12,5 @@ app:
   cors:
     allowed-methods: get, delete, post, put
     allowed-headers: [Content-Type, Authorization]
-    allowed-origins: ['*']
+    allowed-origins: [http://localhost:5173, http://127.0.0.1:5173, http://192.168.10.254:5173]
     exposed-headers: [Content-Type, Authorization]
