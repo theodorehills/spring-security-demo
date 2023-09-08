@@ -1,7 +1,9 @@
 spring:
   security:
     user:
+      # Specify the username to log in the system
       name: admin
+      # Specify the password to log in the system
       password: 123456
 
 logging:
