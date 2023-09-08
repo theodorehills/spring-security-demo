@@ -29,30 +29,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.authorizeHttpRequests((requestCustomizer) -> {
-            // 授权相关的配置
-            requestCustomizer
-                    // requestMatchers: 请求URI
-                    // permitAll: 匿名访问，所有人都可以访问
-                    .requestMatchers("/login").permitAll()
-                    // anyRequest: 所有请求
-                    // authenticated: 认证（登录）
-                    .anyRequest().authenticated();
+            requestCustomizer // Configurations about authentication
+                    .requestMatchers("/login").permitAll() // - requestMatchers: The listed request uri patterns that
+                                                             // have been managed by Spring Security
+                                                             // - permitAll: This method allows anonymous requests and
+                                                             // grant all people accessing this uri
+                    .anyRequest().authenticated() // - anyRequest: This specifies all the request uris that is not
+                                                  // listed above.
+                                                  // - authenticated: This method requires user is authenticated(no
+                                                  // authorization required)
+            ;
         }).formLogin((formLoginConfigurer) -> {
             formLoginConfigurer
-                    .loginProcessingUrl("/login") // 登录接口
-                    .successHandler((request, response, authentication) -> {
-                        response.setContentType("text/html; charset=UTF-8");
-                        response.getWriter().write("登录成功！");
-                    })
-                    .failureHandler((request, response, exception) -> {
-                        response.setContentType("text/html; charset=UTF-8");
-                        response.getWriter().write("登录失败！");
-                    })
+                    .loginPage("/login").permitAll() // Specify the login page and permit all users to access
+                                                     // without any authentication
+                    .loginProcessingUrl("/login") // Specify the login API
+
             ;
-        }).csrf(AbstractHttpConfigurer::disable).logout((logoutConfigurer) -> {
-            logoutConfigurer.invalidateHttpSession(true);
-        }).cors(corsConfigurer -> {
+        }).csrf(AbstractHttpConfigurer::disable).cors((corsConfigurer) -> {
             corsConfigurer.configurationSource(corsConfigurationSource);
+        }).logout((logoutConfigurer) -> {
+            logoutConfigurer.invalidateHttpSession(true);
         }).build();
     }
 
