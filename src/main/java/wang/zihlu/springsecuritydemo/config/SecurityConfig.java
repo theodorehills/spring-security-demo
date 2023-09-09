@@ -1,11 +1,18 @@
 package wang.zihlu.springsecuritydemo.config;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -29,28 +36,42 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.authorizeHttpRequests((requestCustomizer) -> {
-            requestCustomizer // Configurations about authentication
-                    .requestMatchers("/login").permitAll() // - requestMatchers: The listed request uri patterns that
-                                                             // have been managed by Spring Security
-                                                             // - permitAll: This method allows anonymous requests and
-                                                             // grant all people accessing this uri
-                    .anyRequest().authenticated() // - anyRequest: This specifies all the request uris that is not
-                                                  // listed above.
-                                                  // - authenticated: This method requires user is authenticated(no
-                                                  // authorization required)
-            ;
+            requestCustomizer
+                    .requestMatchers("/admin").hasRole("admin")
+                    .requestMatchers("/user").hasAnyRole("admin", "user")
+                    .requestMatchers("/app").permitAll()
+                    .requestMatchers("/login").permitAll()
+                    .anyRequest().authenticated();
         }).formLogin((formLoginConfigurer) -> {
             formLoginConfigurer
-                    .loginPage("/login").permitAll() // Specify the login page and permit all users to access
-                                                     // without any authentication
-                    .loginProcessingUrl("/login") // Specify the login API
-
-            ;
+                    .loginPage("/login").permitAll()
+                    .loginProcessingUrl("/login");
+        }).exceptionHandling((exceptionHandlingConfigurer) -> {
+            exceptionHandlingConfigurer.accessDeniedPage("/unauthorised");
         }).csrf(AbstractHttpConfigurer::disable).cors((corsConfigurer) -> {
             corsConfigurer.configurationSource(corsConfigurationSource);
         }).logout((logoutConfigurer) -> {
             logoutConfigurer.invalidateHttpSession(true);
         }).build();
+    }
+
+    @Bean
+    @SuppressWarnings("deprecation") // This password encoder will be used for dev environment.
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Bean
+    public UserDetailsService inMemoryUserDetailsManager() {
+        return new InMemoryUserDetailsManager(
+                User.withUsername("admin")
+                        .password("123456")
+                        .roles("admin", "user")
+                        .build(),
+                User.withUsername("user")
+                        .password("123456")
+                        .roles("user")
+                        .build());
     }
 
 }

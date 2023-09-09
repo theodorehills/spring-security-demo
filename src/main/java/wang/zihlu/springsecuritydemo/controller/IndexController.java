@@ -16,4 +16,24 @@ public class IndexController {
         return "index";
     }
 
+    @GetMapping("/admin")
+    public String adminApi() {
+        return "admin";
+    }
+
+    @GetMapping("/user")
+    public String userApi() {
+        return "user";
+    }
+
+    @GetMapping("/app")
+    public String appApi() {
+        return "app";
+    }
+
+    @GetMapping("/unauthorised")
+    public String unauthorised() {
+        return "unauthorised";
+    }
+
 }

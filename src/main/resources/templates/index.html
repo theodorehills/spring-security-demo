@@ -9,8 +9,11 @@
 </head>
 <body>
 <h1 style="background-color:#cc6297;">System Index Page</h1>
-<div style="width: 100px; height: 100px; background-color: coral;">Important!</div>
-Logout requires a POST request.
+<ul>
+    <li><a th:href="@{/admin}">Admin Page</a></li>
+    <li><a th:href="@{/user}">User Page</a></li>
+    <li><a th:href="@{/app}">Anonymous Page</a></li>
+</ul>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Logout">
 </form>
